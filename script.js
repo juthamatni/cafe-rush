@@ -5,6 +5,7 @@ const RECIPES = {
     "Sweet Latte": ["Espresso", "Milk", "Syrup"]
 };
 
+// 1. โครงสร้างข้อมูล Queue
 class OrderQueue {
     constructor() {
         this.orders = [];
@@ -19,11 +20,16 @@ const customerQueue = new OrderQueue();
 let currentCup = [];
 let score = 0;
 let servedCount = 0;
+const MAX_QUEUE_SIZE = 5; // จำกัดคิวสูงสุดในร้านไม่เกิน 5 คน
 
+// ฟังก์ชันสุ่มสร้างลูกค้าใหม่เข้า Queue
 function addCustomerOrder() {
+    // ถ้าคิวเต็มแล้ว จะยังไม่สร้างลูกค้าเพิ่ม
+    if (customerQueue.orders.length >= MAX_QUEUE_SIZE) return;
+
     const menus = Object.keys(RECIPES);
     const randomMenu = menus[Math.floor(Math.random() * menus.length)];
-    const randomTime = Math.floor(Math.random() * 25) + 15;
+    const randomTime = Math.floor(Math.random() * 15) + 15; // เวลา 15-30 วินาที
 
     const newOrder = {
         id: Date.now(),
@@ -36,6 +42,7 @@ function addCustomerOrder() {
     renderQueue();
 }
 
+// 2. ฟังก์ชัน Sorting เรียงลำดับคิวตามเวลาเร่งด่วน (เวลาเหลือน้อยที่สุด)
 function handleSortOrders() {
     if (customerQueue.isEmpty()) return;
     customerQueue.orders.sort((a, b) => a.timeLeft - b.timeLeft);
@@ -52,6 +59,7 @@ function clearCup() {
     document.getElementById("cup-contents").innerText = "ว่างเปล่า";
 }
 
+// เสิร์ฟออเดอร์แรก (Dequeue)
 function serveFirstCustomer() {
     if (customerQueue.isEmpty()) return alert("ไม่มีลูกค้าในคิว!");
 
@@ -78,7 +86,7 @@ function renderQueue() {
     queueDiv.innerHTML = "";
 
     if (customerQueue.isEmpty()) {
-        queueDiv.innerHTML = "<p style='color:#888;'>ไม่มีคิวลูกค้าในขณะนี้</p>";
+        queueDiv.innerHTML = "<p style='color:#888;'>กำลังรอสุ่มลูกค้าใหม่เข้าคิว...</p>";
         currentOrderText.innerText = "ไม่มีลูกค้า";
         return;
     }
@@ -87,7 +95,7 @@ function renderQueue() {
 
     customerQueue.orders.forEach((order, index) => {
         const card = document.createElement("div");
-        card.className = `order-card ${order.timeLeft <= 15 ? 'urgent' : ''}`;
+        card.className = `order-card ${order.timeLeft <= 10 ? 'urgent' : ''}`;
         card.innerHTML = `
             <span><b>คิวที่ ${index + 1}:</b> ${order.menu}</span>
             <span>⏳ เหลือเวลา: ${order.timeLeft}s</span>
@@ -96,10 +104,24 @@ function renderQueue() {
     });
 }
 
+// -------------------------------------------------------------
+// ระบบอัตโนมัติ (Timers)
+// -------------------------------------------------------------
+
+// 1. สุ่มสร้างลูกค้าใหม่เข้าคิวอัตโนมัติทุกๆ 4 วินาที
+setInterval(() => {
+    addCustomerOrder();
+}, 4000);
+
+// 2. ตัวนับเวลาถอยหลังออเดอร์ทุกๆ 1 วินาที
 setInterval(() => {
     if (!customerQueue.isEmpty()) {
         customerQueue.orders.forEach(order => order.timeLeft--);
+        // ลบออเดอร์ที่หมดเวลาออกจาก Queue อัตโนมัติ
         customerQueue.orders = customerQueue.orders.filter(order => order.timeLeft > 0);
         renderQueue();
     }
 }, 1000);
+
+// สร้างลูกค้าคนแรกทันทีเมื่อเปิดเกม
+addCustomerOrder();
