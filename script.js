@@ -1,141 +1,105 @@
+const RECIPES = {
+    "Espresso": ["Espresso"],
+    "Latte": ["Espresso", "Milk"],
+    "Americano": ["Espresso", "Water"],
+    "Sweet Latte": ["Espresso", "Milk", "Syrup"]
+};
 
-const startBtn = document.getElementById("startBtn");
-const scoreText = document.getElementById("score");
-const timeText = document.getElementById("time");
-const message = document.getElementById("message");
-const orderList = document.getElementById("orderList");
-
-const menu = [
-  { name: "กาแฟ", emoji: "☕", points: 10 },
-  { name: "ชาเขียว", emoji: "🍵", points: 15 },
-  { name: "โกโก้", emoji: "🥤", points: 12 },
-  { name: "ครัวซองต์", emoji: "🥐", points: 8 },
-  { name: "เค้ก", emoji: "🍰", points: 20 }
-];
-
-let orders = [];
-let score = 0;
-let timeLeft = 60;
-let timer = null;
-let nextId = 1;
-let playing = false;
-
-function startGame() {
-  clearInterval(timer);
-
-  orders = [];
-  score = 0;
-  timeLeft = 60;
-  nextId = 1;
-  playing = true;
-
-  scoreText.textContent = score;
-  timeText.textContent = timeLeft;
-  orderList.innerHTML = "";
-  message.textContent = "รับออเดอร์ให้ทันเวลากันเลย!";
-  startBtn.textContent = "เริ่มเกมใหม่";
-
-  addOrder();
-  addOrder();
-  addOrder();
-
-  timer = setInterval(() => {
-    timeLeft--;
-    timeText.textContent = timeLeft;
-
-    if (timeLeft <= 0) {
-      endGame();
+class OrderQueue {
+    constructor() {
+        this.orders = [];
     }
-  }, 1000);
+    enqueue(order) { this.orders.push(order); }
+    dequeue() { return this.orders.shift(); }
+    peek() { return this.orders[0]; }
+    isEmpty() { return this.orders.length === 0; }
 }
 
-function addOrder() {
-  if (!playing || orders.length >= 8) return;
+const customerQueue = new OrderQueue();
+let currentCup = [];
+let score = 0;
+let servedCount = 0;
 
-  const item = menu[Math.floor(Math.random() * menu.length)];
+function addCustomerOrder() {
+    const menus = Object.keys(RECIPES);
+    const randomMenu = menus[Math.floor(Math.random() * menus.length)];
+    const randomTime = Math.floor(Math.random() * 25) + 15;
 
-  orders.push({
-    id: nextId++,
-    name: item.name,
-    emoji: item.emoji,
-    points: item.points,
-    deadline: timeLeft
-  });
+    const newOrder = {
+        id: Date.now(),
+        menu: randomMenu,
+        recipe: RECIPES[randomMenu],
+        timeLeft: randomTime
+    };
 
-  renderOrders();
+    customerQueue.enqueue(newOrder);
+    renderQueue();
 }
 
-function renderOrders() {
-  orderList.innerHTML = "";
-
-  orders.forEach((order, index) => {
-    const card = document.createElement("div");
-    card.className = "order";
-
-    const info = document.createElement("span");
-    info.textContent =
-      `${order.emoji} ${order.name} · ${order.points} คะแนน`;
-
-    const serveBtn = document.createElement("button");
-    serveBtn.textContent = "เสิร์ฟ";
-    serveBtn.disabled = !playing;
-    serveBtn.addEventListener("click", () => serveOrder(order.id));
-
-    card.append(info, serveBtn);
-    orderList.appendChild(card);
-  });
-
-  if (playing) {
-    const addBtn = document.createElement("button");
-    addBtn.textContent = "➕ รับออเดอร์ใหม่";
-    addBtn.addEventListener("click", addOrder);
-    addBtn.disabled = orders.length >= 8;
-    orderList.appendChild(addBtn);
-
-    const sortBtn = document.createElement("button");
-    sortBtn.textContent = "เรียงตามคะแนนมากไปน้อย";
-    sortBtn.addEventListener("click", sortOrders);
-    orderList.appendChild(sortBtn);
-  }
+function handleSortOrders() {
+    if (customerQueue.isEmpty()) return;
+    customerQueue.orders.sort((a, b) => a.timeLeft - b.timeLeft);
+    renderQueue();
 }
 
-function serveOrder(id) {
-  if (!playing) return;
-
-  const index = orders.findIndex(order => order.id === id);
-  if (index === -1) return;
-
-  // Queue: ให้ทำออเดอร์ที่เข้าคิวก่อนเท่านั้น
-  if (index !== 0) {
-    message.textContent = "ทำออเดอร์แรกในคิวก่อนนะ!";
-    return;
-  }
-
-  const completed = orders.shift();
-  score += completed.points;
-  scoreText.textContent = score;
-  message.textContent = `เสิร์ฟ${completed.name}สำเร็จ! +${completed.points} คะแนน`;
-
-  addOrder();
-  renderOrders();
+function addIngredient(item) {
+    currentCup.push(item);
+    document.getElementById("cup-contents").innerText = currentCup.join(" + ");
 }
 
-function sortOrders() {
-  if (!playing) return;
-
-  // Sorting: เรียงออเดอร์ตามคะแนนจากมากไปน้อย
-  orders.sort((a, b) => b.points - a.points);
-
-  renderOrders();
-  message.textContent = "เรียงออเดอร์ตามคะแนนแล้ว";
+function clearCup() {
+    currentCup = [];
+    document.getElementById("cup-contents").innerText = "ว่างเปล่า";
 }
 
-function endGame() {
-  playing = false;
-  clearInterval(timer);
-  renderOrders();
-  message.textContent = `หมดเวลา! ได้ทั้งหมด ${score} คะแนน`;
-  startBtn.textContent = "เล่นอีกครั้ง";
+function serveFirstCustomer() {
+    if (customerQueue.isEmpty()) return alert("ไม่มีลูกค้าในคิว!");
+
+    const currentOrder = customerQueue.peek();
+    const isCorrect = JSON.stringify(currentCup.sort()) === JSON.stringify([...currentOrder.recipe].sort());
+
+    if (isCorrect) {
+        score += 20;
+        servedCount++;
+        alert(`✨ เสิร์ฟเมนู ${currentOrder.menu} สำเร็จ! +20 คะแนน`);
+        customerQueue.dequeue();
+        clearCup();
+        document.getElementById("score").innerText = score;
+        document.getElementById("served-count").innerText = servedCount;
+        renderQueue();
+    } else {
+        alert("❌ ส่วนผสมไม่ถูกต้อง! ลองทำใหม่อีกครั้ง");
+    }
 }
 
-startBtn.addEventListener("click", startGame);
+function renderQueue() {
+    const queueDiv = document.getElementById("queue-display");
+    const currentOrderText = document.getElementById("current-order-name");
+    queueDiv.innerHTML = "";
+
+    if (customerQueue.isEmpty()) {
+        queueDiv.innerHTML = "<p style='color:#888;'>ไม่มีคิวลูกค้าในขณะนี้</p>";
+        currentOrderText.innerText = "ไม่มีลูกค้า";
+        return;
+    }
+
+    currentOrderText.innerText = `${customerQueue.peek().menu} (สูตร: ${customerQueue.peek().recipe.join(" + ")})`;
+
+    customerQueue.orders.forEach((order, index) => {
+        const card = document.createElement("div");
+        card.className = `order-card ${order.timeLeft <= 15 ? 'urgent' : ''}`;
+        card.innerHTML = `
+            <span><b>คิวที่ ${index + 1}:</b> ${order.menu}</span>
+            <span>⏳ เหลือเวลา: ${order.timeLeft}s</span>
+        `;
+        queueDiv.appendChild(card);
+    });
+}
+
+setInterval(() => {
+    if (!customerQueue.isEmpty()) {
+        customerQueue.orders.forEach(order => order.timeLeft--);
+        customerQueue.orders = customerQueue.orders.filter(order => order.timeLeft > 0);
+        renderQueue();
+    }
+}, 1000);
