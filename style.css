@@ -1,99 +1,102 @@
-
-* {
-  box-sizing: border-box;
-}
-
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #fff7ed;
-  color: #4b2e20;
-  text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #2c1d11;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0;
 }
 
-header {
-  background: #6f4e37;
-  color: white;
-  padding: 25px 15px;
+.game-container {
+    width: 100%;
+    max-width: 650px;
+    background: #3d2b1f;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    text-align: center;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 36px;
+h1 { color: #f39c12; margin-bottom: 10px; }
+
+.stats-bar {
+    display: flex;
+    justify-content: space-around;
+    background: #523b2b;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
 }
 
-header p {
-  margin-bottom: 0;
+.action-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
+
+.btn-action {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    font-size: 0.95rem;
+}
+.btn-add { background: #27ae60; }
+.btn-sort { background: #e67e22; }
+
+.queue-board {
+    background: #23160c;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
 }
 
-main {
-  width: 90%;
-  max-width: 650px;
-  margin: 25px auto;
+.queue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
 }
 
-.status {
-  display: flex;
-  justify-content: space-around;
-  gap: 12px;
-  flex-wrap: wrap;
-  background: white;
-  padding: 18px;
-  border-radius: 15px;
-  box-shadow: 0 3px 10px #00000012;
+.order-card {
+    background: #4a3525;
+    padding: 10px 15px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 5px solid #f39c12;
 }
 
-.status strong {
-  color: #b45309;
-  font-size: 22px;
+.order-card.urgent { border-left-color: #e74c3c; background: #5c2828; }
+
+.kitchen-counter {
+    background: #23160c;
+    padding: 15px;
+    border-radius: 10px;
 }
 
-.orders {
-  margin-top: 22px;
-  padding: 20px;
-  background: white;
-  border-radius: 15px;
-  min-height: 180px;
+.ingredients button {
+    padding: 10px 15px;
+    margin: 4px;
+    border: none;
+    border-radius: 6px;
+    background: #d35400;
+    color: white;
+    cursor: pointer;
 }
 
-#orderList {
-  display: grid;
-  gap: 10px;
-  margin-top: 15px;
-}
+.cup-status { margin: 15px 0; font-size: 1.1rem; color: #f1c40f; }
 
-.order {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px;
-  border: 1px solid #ead7c5;
-  border-radius: 10px;
-  text-align: left;
+.kitchen-actions button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
 }
-
-button {
-  border: none;
-  border-radius: 10px;
-  padding: 12px 18px;
-  background: #a0522d;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #7c3f22;
-}
-
-button:disabled {
-  background: #b9a99e;
-  cursor: not-allowed;
-}
-
-#startBtn {
-  margin-top: 20px;
-  font-size: 18px;
-  padding: 14px 30px;
-}
+.btn-serve { background: #2980b9; color: white; margin-right: 10px; }
+.btn-clear { background: #7f8c8d; color: white; }
+.highlight { color: #f1c40f; font-weight: bold; }
