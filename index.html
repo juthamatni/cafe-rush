@@ -1,33 +1,50 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cafe Rush</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafe Rush - Queue & Sorting Game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>☕ Cafe Rush</h1>
-    <p>บริหารร้านคาเฟ่ให้ทันเวลา!</p>
-  </header>
+    <div class="game-container">
+        <h1>☕ CAFE RUSH 🍰</h1>
+        <div class="stats-bar">
+            <span>คะแนน: <b id="score">0</b></span>
+            <span>เสิร์ฟสำเร็จ: <b id="served-count">0</b></span>
+        </div>
 
-  <main>
-    <section class="status">
-      <div>คะแนน <strong id="score">0</strong></div>
-      <div>เวลา <strong id="time">60</strong> วินาที</div>
-    </section>
+        <div class="action-buttons">
+            <button class="btn-action btn-add" onclick="addCustomerOrder()">➕ ลูกค้าใหม่เข้าคิว (Enqueue)</button>
+            <button class="btn-action btn-sort" onclick="handleSortOrders()">⚡ จัดคิวเร่งด่วน (Sorting)</button>
+        </div>
 
-    <section class="orders">
-      <h2>📋 รายการออเดอร์</h2>
-      <p id="message">กดเริ่มเกมเพื่อรับออเดอร์</p>
-      <div id="orderList"></div>
-    </section>
+        <!-- แสดงคิวลูกค้า -->
+        <div class="queue-board">
+            <h2>📋 คิวออเดอร์ในร้าน (Queue)</h2>
+            <div id="queue-display" class="queue-list"></div>
+        </div>
 
-    <button id="startBtn">เริ่มเกม</button>
-  </main>
+        <!-- เคาน์เตอร์ทำกาแฟ -->
+        <div class="kitchen-counter">
+            <h2>🥣 เคาน์เตอร์ปรุงเครื่องดื่ม</h2>
+            <p>ออเดอร์หัวคิวปัจจุบัน: <span id="current-order-name" class="highlight">ไม่มีลูกค้า</span></p>
+            <div class="ingredients">
+                <button onclick="addIngredient('Espresso')">☕ Espresso</button>
+                <button onclick="addIngredient('Milk')">🥛 Milk</button>
+                <button onclick="addIngredient('Water')">💧 Water</button>
+                <button onclick="addIngredient('Syrup')">🍯 Syrup</button>
+            </div>
+            <div class="cup-status">
+                ส่วนผสมในแก้ว: <span id="cup-contents">ว่างเปล่า</span>
+            </div>
+            <div class="kitchen-actions">
+                <button class="btn-serve" onclick="serveFirstCustomer()">☕ เสิร์ฟออเดอร์แรก (Dequeue)</button>
+                <button class="btn-clear" onclick="clearCup()">🗑️ เททิ้ง</button>
+            </div>
+        </div>
+    </div>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
