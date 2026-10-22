@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cafe Rush</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>☕ Cafe Rush</h1>
+    <p>บริหารร้านคาเฟ่ให้ทันเวลา!</p>
+  </header>
+
+  <main>
+    <section class="status">
+      <div>คะแนน <strong id="score">0</strong></div>
+      <div>เวลา <strong id="time">60</strong> วินาที</div>
+    </section>
+
+    <section class="orders">
+      <h2>📋 รายการออเดอร์</h2>
+      <p id="message">กดเริ่มเกมเพื่อรับออเดอร์</p>
+      <div id="orderList"></div>
+    </section>
+
+    <button id="startBtn">เริ่มเกม</button>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
